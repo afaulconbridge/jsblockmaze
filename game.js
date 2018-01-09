@@ -2,11 +2,16 @@ var Game = {
     map: {},
     player: null,
     display: null,
+    engine: null,
 
     init: function() {
         this.display = new ROT.Display();
         document.body.appendChild(this.display.getContainer());
         this._generateMap();
+        var scheduler = new ROT.Scheduler.Simple();
+        scheduler.add(this.player, true);
+        this.engine = new ROT.Engine(scheduler);
+        this.engine.start();
     },
 
     _generateMap: function() {
@@ -21,11 +26,9 @@ var Game = {
             freeCells.push(key);
         }
         digger.create(digCallback.bind(this));
-
-
         this._createPlayer(freeCells);
-
         this._drawWholeMap();
+        this.player._draw();
     },
 
     _createPlayer: function(freeCells) {
@@ -54,9 +57,13 @@ var Player = function(x, y) {
     this._draw();
 };
 
-
 Player.prototype._draw = function() {
     Game.display.draw(this._x, this._y, "@", "#ff0");
 };
+
+Player.prototype.act = function() {
+    Game.engine.lock();
+    //eval blockly
+}
 
 Game.init();
